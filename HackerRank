@@ -1,0 +1,31 @@
+Problem: Challenges
+Solution:
+    WITH tbl_num_challenges AS(
+    SELECT 
+        h.hacker_id, 
+        h.name, 
+        COUNT(c.challenge_id) AS num_challenges
+    FROM hackers h
+    LEFT JOIN challenges c
+    ON h.hacker_id = c.hacker_id
+    GROUP BY h.hacker_id, h.name
+    )
+    , tbl_count_challenges AS(
+    SELECT
+        num_challenges,
+        COUNT(num_challenges) AS count_challenges
+    FROM tbl_num_challenges
+    GROUP BY num_challenges
+    )
+    
+    SELECT
+        n.hacker_id,
+        n.name,
+        n.num_challenges
+      --  c.count_challenges
+    FROM tbl_num_challenges n
+    JOIN tbl_count_challenges c
+    ON n.num_challenges = c.num_challenges
+    WHERE count_challenges <= 1
+    OR n.num_challenges = (SELECT MAX(num_challenges) FROM tbl_num_challenges)
+    ORDER BY n.num_challenges DESC, n.hacker_id
